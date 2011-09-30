@@ -1,0 +1,15 @@
+<expert>
+type=LIBRARY_ADVISOR
+</expert>
+#header#
+#property copyright "#copyright#"
+#property link      "#link#"
+
+//+------------------------------------------------------------------+
+//| My function                                                      |
+//+------------------------------------------------------------------+
+// int MyCalculator(int value,int value2)
+//   {
+//    return(value+value2);
+//   }
+//+------------------------------------------------------------------+

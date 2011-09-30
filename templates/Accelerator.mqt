@@ -1,0 +1,91 @@
+<expert>
+type=INDICATOR_ADVISOR
+description=Accelerator Oscilator
+separate_window=1
+used_buffers=4
+<ind>
+color=Green
+type=DRAW_HISTOGRAM
+</ind>
+<ind>
+color=Red
+type=DRAW_HISTOGRAM
+</ind>
+</expert>
+#header#
+#property copyright "#copyright#"
+#property link      "#link#"
+
+#indicator_properties#
+#extern_variables#
+#mapping_buffers#
+//---- indicator buffers
+double ExtGreenBuffer[];
+double ExtRedBuffer[];
+double ExtMABuffer[];
+double ExtBuffer[];
+//+------------------------------------------------------------------+
+//| Custom indicator initialization function                         |
+//+------------------------------------------------------------------+
+int init()
+  {
+   #buffers_used#;
+//---- indicator buffers mapping
+   SetIndexBuffer(0, ExtGreenBuffer);
+   SetIndexBuffer(1, ExtRedBuffer);
+   SetIndexBuffer(2, ExtMABuffer);
+   SetIndexBuffer(3, ExtBuffer);
+//---- drawing settings
+   #indicators_init#
+//----
+   IndicatorDigits(6);
+   SetIndexDrawBegin(0,38);
+   SetIndexDrawBegin(1,38);
+//---- name for DataWindow and indicator subwindow label
+   IndicatorShortName("AC");
+//---- initialization done
+   return(0);
+  }
+//+------------------------------------------------------------------+
+//| Accelerator/Decelerator Oscillator                               |
+//+------------------------------------------------------------------+
+int start()
+  {
+   int    limit;
+   int    counted_bars=IndicatorCounted();
+   double prev,current;
+//---- check for possible errors
+   if(counted_bars<0) return(-1);
+//---- last counted bar will be recounted
+   if(counted_bars>0) counted_bars--;
+   limit=Bars-counted_bars;
+//---- macd counted in the 1-st additional buffer
+   for(int i=0; i<limit; i++)
+      ExtMABuffer[i]=iMA(NULL,0,5,0,MODE_SMA,PRICE_MEDIAN,i)-iMA(NULL,0,34,0,MODE_SMA,PRICE_MEDIAN,i);
+//---- signal line counted in the 2-nd additional buffer
+   for(i=0; i<limit; i++)
+      ExtBuffer[i]=iMAOnArray(ExtMABuffer,Bars,5,0,MODE_SMA,i);
+//---- dispatch values between 2 buffers
+   bool up=true;
+   for(i=limit-1; i>=0; i--)
+     {
+      current=ExtMABuffer[i]-ExtBuffer[i];
+      prev=ExtMABuffer[i+1]-ExtBuffer[i+1];
+      if(current>prev) up=true;
+      if(current<prev) up=false;
+      if(!up)
+        {
+         ExtRedBuffer[i]=current;
+         ExtGreenBuffer[i]=0.0;
+        }
+      else
+        {
+         ExtGreenBuffer[i]=current;
+         ExtRedBuffer[i]=0.0;
+        }
+     }
+//---- done
+   return(0);
+  }
+//+------------------------------------------------------------------+
+

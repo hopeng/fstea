@@ -1,0 +1,19 @@
+<expert>
+type=SCRIPT_ADVISOR
+</expert>
+#header#
+#property copyright "#copyright#"
+#property link      "#link#"
+
+#extern_variables#
+//+------------------------------------------------------------------+
+//| script program start function                                    |
+//+------------------------------------------------------------------+
+int start()
+  {
+//----
+   
+//----
+   return(0);
+  }
+//+------------------------------------------------------------------+

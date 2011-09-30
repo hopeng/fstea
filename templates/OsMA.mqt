@@ -1,0 +1,81 @@
+<expert>
+type=INDICATOR_ADVISOR
+separate_window=1
+used_buffers=3
+<param>
+name=FastEMA
+type=int
+value=12
+</param>
+<param>
+name=SlowEMA
+type=int
+value=26
+</param>
+<param>
+name=SignalSMA
+type=int
+value=9
+</param>
+<ind>
+type=DRAW_HISTOGRAM
+color=Silver
+</ind>
+</expert>
+#header#
+#property copyright "#copyright#"
+#property link      "#link#"
+
+#indicator_properties#
+#extern_variables#
+#mapping_buffers#
+//---- indicator buffers
+double ExtSilverBuffer[];
+double ExtMABuffer[];
+double ExtBuffer[];
+//+------------------------------------------------------------------+
+//| Custom indicator initialization function                         |
+//+------------------------------------------------------------------+
+int init()
+  {
+   #buffers_used#;
+//---- drawing settings
+   #indicators_init#
+//----
+   SetIndexDrawBegin(0,SignalSMA);
+   IndicatorDigits(6);
+//---- indicator buffers mapping
+   SetIndexBuffer(0,ExtSilverBuffer);
+   SetIndexBuffer(1,ExtMABuffer);
+   SetIndexBuffer(2,ExtBuffer);
+//---- name for DataWindow and indicator subwindow label
+   IndicatorShortName("OsMA("+FastEMA+","+SlowEMA+","+SignalSMA+")");
+//---- initialization done
+   return(0);
+  }
+//+------------------------------------------------------------------+
+//| Moving Average of Oscillator                                     |
+//+------------------------------------------------------------------+
+int start()
+  {
+   int limit;
+   int counted_bars=IndicatorCounted();
+//---- check for possible errors
+   if(counted_bars<0) return(-1);
+//---- last counted bar will be recounted
+   if(counted_bars>0) counted_bars--;
+   limit=Bars-counted_bars;
+//---- macd counted in the 1-st additional buffer
+   for(int i=0; i<limit; i++)
+      ExtMABuffer[i]=iMA(NULL,0,FastEMA,0,MODE_EMA,PRICE_CLOSE,i)-iMA(NULL,0,SlowEMA,0,MODE_EMA,PRICE_CLOSE,i);
+//---- signal line counted in the 2-nd additional buffer
+   for(i=0; i<limit; i++)
+      ExtBuffer[i]=iMAOnArray(ExtMABuffer,Bars,SignalSMA,0,MODE_SMA,i);
+//---- main loop
+   for(i=0; i<limit; i++)
+      ExtSilverBuffer[i]=ExtMABuffer[i]-ExtBuffer[i];
+//---- done
+   return(0);
+  }
+//+------------------------------------------------------------------+
+

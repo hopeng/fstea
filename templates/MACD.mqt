@@ -1,0 +1,80 @@
+<expert>
+type=INDICATOR_ADVISOR
+separate_window=1
+used_buffers=2
+<param>
+type=int
+name=FastEMA
+value=12
+</param>
+<param>
+type=int
+name=SlowEMA
+value=26
+</param>
+<param>
+type=int
+name=SignalSMA
+value=9
+</param>
+<ind>
+color=Silver
+type=DRAW_HISTOGRAM
+</ind>
+<ind>
+color=Red
+</ind>
+</expert>
+#header#
+#property copyright "#copyright#"
+#property link      "#link#"
+
+#indicator_properties#
+#extern_variables#
+#mapping_buffers#
+//---- indicator buffers
+double ExtSilverBuffer[];
+double ExtRedBuffer[];
+
+//+------------------------------------------------------------------+
+//| Custom indicator initialization function                         |
+//+------------------------------------------------------------------+
+int init()
+  {
+   #buffers_used#;
+//---- drawing settings
+   #indicators_init#
+//----
+   SetIndexDrawBegin(1,SignalSMA);
+   IndicatorDigits(5);
+//---- indicator buffers mapping
+   SetIndexBuffer(0, ExtSilverBuffer);
+   SetIndexBuffer(1, ExtRedBuffer);
+//---- name for DataWindow and indicator subwindow label
+   IndicatorShortName("MACD("+FastEMA+","+SlowEMA+","+SignalSMA+")");
+//---- initialization done
+   return(0);
+  }
+//+------------------------------------------------------------------+
+//| Moving Averages Convergence/Divergence                           |
+//+------------------------------------------------------------------+
+int start()
+  {
+   int limit;
+   int counted_bars=IndicatorCounted();
+//---- check for possible errors
+   if(counted_bars<0) return(-1);
+//---- last counted bar will be recounted
+   if(counted_bars>0) counted_bars--;
+   limit=Bars-counted_bars;
+//---- macd counted in the 1-st buffer
+   for(int i=0; i<limit; i++)
+      ExtSilverBuffer[i]=iMA(NULL,0,FastEMA,0,MODE_EMA,PRICE_CLOSE,i)-iMA(NULL,0,SlowEMA,0,MODE_EMA,PRICE_CLOSE,i);
+//---- signal line counted in the 2-nd buffer
+   for(i=0; i<limit; i++)
+      ExtRedBuffer[i]=iMAOnArray(ExtSilverBuffer,Bars,SignalSMA,0,MODE_SMA,i);
+//---- done
+   return(0);
+  }
+//+------------------------------------------------------------------+
+

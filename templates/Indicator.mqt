@@ -1,0 +1,43 @@
+<expert>
+type=INDICATOR_ADVISOR
+</expert>
+#header#
+#property copyright "#copyright#"
+#property link      "#link#"
+
+#indicator_properties#
+#extern_variables#
+#mapping_buffers#
+//+------------------------------------------------------------------+
+//| Custom indicator initialization function                         |
+//+------------------------------------------------------------------+
+int init()
+  {
+   #buffers_used#
+//---- indicators
+   #indicators_init#
+//----
+   return(0);
+  }
+//+------------------------------------------------------------------+
+//| Custom indicator deinitialization function                       |
+//+------------------------------------------------------------------+
+int deinit()
+  {
+//----
+   
+//----
+   return(0);
+  }
+//+------------------------------------------------------------------+
+//| Custom indicator iteration function                              |
+//+------------------------------------------------------------------+
+int start()
+  {
+   int    counted_bars=IndicatorCounted();
+//----
+   
+//----
+   return(0);
+  }
+//+------------------------------------------------------------------+
